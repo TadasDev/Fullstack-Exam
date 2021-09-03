@@ -71,7 +71,7 @@ class UserApiController extends Controller
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 Auth::login($user);
-                return \response([Auth::id() => 'logged in successful'], 422);
+                return \response(['message' => 'logged in successful'], 422);
             } else {
                 return \response(['message' => 'Password mismatch'], 422);
             }
