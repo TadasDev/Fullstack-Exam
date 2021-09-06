@@ -10,6 +10,7 @@
         "production": "mix --production"
     },
     "devDependencies": {
+        "@vue/cli-plugin-router": "~4.5.0",
         "axios": "^0.21",
         "bootstrap": "^4.6.0",
         "jquery": "^3.6",
@@ -26,5 +27,10 @@
         "webpack": "^5.51.2",
         "webpack-cli": "^4.1.0",
         "webpack-dev-server": "^3.11.0"
+    },
+    "dependencies": {
+        "vue-axios": "^3.2.5",
+        "vue-progressbar": "^0.7.5",
+        "vue-router": "^3.5.2"
     }
 }
