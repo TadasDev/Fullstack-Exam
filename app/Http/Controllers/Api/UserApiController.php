@@ -4,27 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 
 
 class UserApiController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth.basic', ['except' => [
-            'register',
-            'login',
-        ]]);
-    }
 
     public function register(Request $request)
     {
-
         $validator = Validator::make($request->all(),
             [
                 'email' => 'required|unique:users|email:rfc,dns',
@@ -43,16 +34,18 @@ class UserApiController extends Controller
         }
 
 
-        User::create([
+        $user = User::create([
             'email' => $request['email'],
             'name' => $request['name'],
             'password' => Hash::make($request['password']),
             'is_admin' => 0,
-            'remember_token' => Str::random(10)
         ]);
 
-        return \response([
-            'message' => 'Registration successful'
+        $access_token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $access_token,
+            'token_type' => 'Bearer',
         ], 200);
     }
 
@@ -73,25 +66,32 @@ class UserApiController extends Controller
 
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
-                \auth()->login($user);
-                return \response([
-                        'message' => 'logged in successful',
-                        'user' => $user
-                    ]
-                    , 200);
+                \auth()->login($user,true);
+
+                $access_token = $user
+                    ->createToken('auth_token')
+                    ->plainTextToken;
+
+                return response()->json([
+                    'token' => $access_token,
+                    'token_type' => 'Bearer',
+                ], 200);
             } else {
-                return \response(['message' => 'Password mismatch'], 422);
+                return response()->json(['message' => 'Password mismatch'], 422);
             }
         } else {
-            return \response(['message' => 'User EMAIL does not exists!'], 422);
+            return response()->json(['message' => 'User EMAIL does not exists!'], 422);
         }
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
-        Auth::logout();
-        $response = ['message' => 'You have been successfully logged out!'];
-        return response($response, 200);
+        $user = Auth::user();
+        $user->tokens()->delete();
 
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ],200);
     }
+
 }
