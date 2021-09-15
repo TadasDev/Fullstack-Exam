@@ -18,7 +18,7 @@ class FishingLicenceApiController extends Controller
 
     public function index(): AnonymousResourceCollection
     {
-        $licences = FishingLicence::all()->sortBy('valid_to')->where('user_id', Auth::id())->take(20);
+        $licences = FishingLicence::all()->sortBy('valid_to')->where('user_id', Auth::id())->take(30);
 
         return LicenceResource::collection($licences);
     }
@@ -62,7 +62,7 @@ class FishingLicenceApiController extends Controller
             'status' => 1,
             'price' => $price
         ]);
-        return response()->json(['status' => 'success'], 200);
+        return response()->json(['status' => 'success']);
 
     }
 

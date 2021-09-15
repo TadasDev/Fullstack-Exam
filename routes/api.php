@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\PriceListApiController;
 use App\Http\Controllers\Api\RegionApiController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\FishingLicenceApiController;
-use App\Models\Region;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,20 +17,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+//Public routes
 Route::post('/register', [UserApiController::class, 'register'])
     ->name('register.api');
 
 Route::post('/login', [UserApiController::class, 'login'])
     ->name('login.api');
 
-   //Authenticated access
+//Authenticated routes
 Route::post('/logout', [UserApiController::class, 'logout'])
     ->name('logout.api')->middleware('auth:sanctum');
 
-Route::get('/fishinglicence', [FishingLicenceApiController::class,'index'])->name('index.api')
+Route::patch('/profile/edit', [UserApiController::class, 'editProfile'])
+    ->name('editProfile.api')->middleware('auth:sanctum');
+
+Route::get('/fishing-licence', [FishingLicenceApiController::class,'index'])->name('index.api')
     ->middleware('auth:sanctum');
-Route::post('/buyLicence', [FishingLicenceApiController::class,'create'])->name('create.api')
+Route::post('/buy-licence', [FishingLicenceApiController::class,'create'])->name('create.api')
     ->middleware('auth:sanctum');
 
 Route::get('/list-of-regions', [RegionApiController::class,'listOfRegions'])->name('listOfRegions.api')

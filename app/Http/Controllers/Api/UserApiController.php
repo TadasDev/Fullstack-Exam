@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class UserApiController extends Controller
                 'email' => 'required|unique:users|email:rfc,dns',
                 'name' => 'required|max:255',
                 'password' => [
-                    'required',
+//                    'required',
 //                    'string',
 //                    Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised(),
 //                    'confirmed'
@@ -55,8 +56,8 @@ class UserApiController extends Controller
             [
                 'email' => 'required|unique:users|email:rfc,dns',
                 'password' => [
-                    'required',
-                    'string',
+//                    'required',
+//                    'string',
 //                    Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised(),
 //                    'confirmed'
                 ],
@@ -73,6 +74,7 @@ class UserApiController extends Controller
                     ->plainTextToken;
 
                 return response()->json([
+                    'user'=>$user,
                     'token' => $access_token,
                     'token_type' => 'Bearer',
                 ], 200);
@@ -91,6 +93,18 @@ class UserApiController extends Controller
 
         return response()->json([
             'message' => 'Successfully logged out'
+        ],200);
+    }
+
+    public function editProfile(Request $request){
+
+        $user = User::find(Auth::id());
+        $user->email = $request->input('email');
+        $user->name = $request->input('name');
+        $user->save();  // Update the data
+
+        return response()->json([
+            'message' => 'Successfully updated profile'
         ],200);
     }
 
