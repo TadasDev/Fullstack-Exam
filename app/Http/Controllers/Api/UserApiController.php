@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 
 class UserApiController extends Controller
@@ -20,12 +21,12 @@ class UserApiController extends Controller
         $validator = Validator::make($request->all(),
             [
                 'email' => 'required|unique:users|email:rfc,dns',
-                'name' => 'required|max:255',
+                'name' => 'required|max:255|min:5',
                 'password' => [
-//                    'required',
-//                    'string',
-//                    Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised(),
-//                    'confirmed'
+                    'required',
+                    'string',
+                    Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised(),
+                    'confirmed'
                 ],
                 'password_confirmation' => 'required|same:password'
             ]
@@ -56,10 +57,10 @@ class UserApiController extends Controller
             [
                 'email' => 'required|unique:users|email:rfc,dns',
                 'password' => [
-//                    'required',
-//                    'string',
-//                    Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised(),
-//                    'confirmed'
+                    'required',
+                    'string',
+                    Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised(),
+                    'confirmed'
                 ],
             ]);
 
@@ -97,6 +98,11 @@ class UserApiController extends Controller
     }
 
     public function editProfile(Request $request){
+        Validator::make($request->all(),
+            [
+                'email' => 'required|unique:users|email:rfc,dns',
+                'name'=>'required|string|max:128'
+            ]);
 
         $user = User::find(Auth::id());
         $user->email = $request->input('email');
